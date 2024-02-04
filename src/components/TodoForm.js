@@ -2,20 +2,34 @@ import React, { useState } from "react";
 
 const TodoForm = ({ addTodo }) => {
   const [value, setValue] = useState("");
+  const [placeholder, setPlaceholder] = useState("What is the task today?");
+  const [isEmpty, setIsEmpty] = useState(true);
+
+  const handleChange = (e) => {
+    setValue(e.target.value);
+    setIsEmpty(e.target.value.trim() === "");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    addTodo(value);
-
-    setValue("");
+    if (!isEmpty) {
+      addTodo(value);
+      setValue("");
+      setPlaceholder("What is the task today?");
+      setIsEmpty(true);
+    } else {
+      setPlaceholder("Please enter a task");
+    }
   };
+
   return (
     <form className="TodoForm" onSubmit={handleSubmit}>
       <input
         type="text"
-        className="todo-input"
+        className={`todo-input ${isEmpty ? "empty" : ""}`}
         value={value}
-        placeholder="What is the task today?"
-        onChange={(e) => setValue(e.target.value)}
+        placeholder={placeholder}
+        onChange={handleChange}
       />
       <button type="submit" className="todo-btn">
         Add Task

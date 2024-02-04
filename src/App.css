@@ -8,7 +8,7 @@
 }
 
 body {
-  background: #8758ff;
+  background: rgb(226, 242, 255);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,13 +19,14 @@ body {
 }
 
 h1 {
-  color: #fff;
+  color: #002324;
   margin-bottom: 0.5rem;
   font-size: 1.75rem;
+  font-weight: bolder;
 }
 
 .TodoWrapper {
-  background: #1a1a40;
+  background: white;
   margin-top: 5rem;
   padding: 2rem;
   border-radius: 5px;
@@ -39,31 +40,34 @@ h1 {
 .todo-input {
   outline: none;
   background: none;
-  border: 1px solid #8758ff;
+  border: 1px solid#00a0a9;
   padding: 0.5rem 1rem;
   margin-top: 1rem;
   margin-bottom: 2rem;
   width: 300px;
-  color: #fff;
+  color: #000;
 }
 
 .todo-input::placeholder {
-  color: #ffffff4d;
+  color: #00a0a9;
 }
 
-.todo-btn {
-  background: #8758ff;
+.todo-btn,
+.clear-btn {
+  background: #00a0a9;
   color: #fff;
   border: none;
   padding: 0.55rem;
   cursor: pointer;
 }
-
+.taskCount {
+  float: left;
+}
 .Todo {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #8758ff;
+  background: #00a0a9;
   color: #fff;
   padding: 0.75rem 1rem;
   border-radius: 5px;
@@ -73,14 +77,18 @@ h1 {
 .fa-trash {
   margin-left: 0.75rem;
 }
-
+.faSave {
+  margin-left: 0.75rem;
+  color: #00a0a9;
+  font-size: larger;
+}
 .incompleted {
   color: #fff;
   cursor: pointer;
 }
 
 .completed {
-  color: #c5aeff;
+  color: #000000;
   text-decoration: line-through;
   cursor: pointer;
 }
