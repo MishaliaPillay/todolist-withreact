@@ -12,8 +12,12 @@ export const TodoWrapper = () => {
   const [todos, setTodos] = useState([]);
   const [userData, setUserData] = useState({ entries: [] });
 
+  const allEntries = userData.entries;
+  console.log("all entries", allEntries);
+
   useEffect(() => {
     const storedData = getLocalStorageData();
+    console.log("stored data", storedData);
     if (storedData) {
       setUserData(storedData);
       setTodos(storedData.todos);
