@@ -82,6 +82,11 @@ h1 {
   color: #00a0a9;
   font-size: larger;
 }
+.faCalendarDays {
+  margin-left: 0.75rem;
+  color: #00a0a9;
+  font-size: larger;
+}
 .incompleted {
   color: #fff;
   cursor: pointer;

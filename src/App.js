@@ -1,10 +1,14 @@
 import "./App.css";
+import Calendar from "./components/Calendar";
 import TodoWrapper from "./components/TodoWrapper";
 
 function App() {
   return (
     <div className="App">
-      <TodoWrapper />
+      <section>
+        <TodoWrapper />
+      </section>
+      <section><Calendar/></section>
     </div>
   );
 }
