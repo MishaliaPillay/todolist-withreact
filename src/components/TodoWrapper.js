@@ -4,10 +4,9 @@ import { v4 as uuidv4 } from "uuid";
 import Todo from "./Todo";
 import EditTodoForm from "./EditTodoForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave } from "@fortawesome/free-solid-svg-icons"; // Import the save icon
-
+import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { getLocalStorageData, updateLocalStorageData } from "./LocalStorage";
-uuidv4();
+
 export const TodoWrapper = () => {
   const [todos, setTodos] = useState([]);
   const [userData, setUserData] = useState({ entries: [] });
@@ -30,6 +29,12 @@ export const TodoWrapper = () => {
       { id: uuidv4(), task: todo, completed: false, isEditing: false },
     ];
 
+    setTodos(newTodos);
+    console.log("Date:", new Date().toLocaleDateString());
+    console.log("Number of Tasks:", newTodos.length);
+  };
+
+  const saveUserData = () => {
     const currentDate = new Date().toLocaleDateString();
     const existingEntryIndex = userData.entries.findIndex(
       (entry) => entry.date === currentDate
@@ -38,7 +43,7 @@ export const TodoWrapper = () => {
     if (existingEntryIndex !== -1) {
       // Update existing entry
       const updatedEntries = [...userData.entries];
-      updatedEntries[existingEntryIndex].tasks.push(todo);
+      updatedEntries[existingEntryIndex].tasks = todos.map((todo) => todo.task);
 
       setUserData({
         entries: updatedEntries,
@@ -47,7 +52,7 @@ export const TodoWrapper = () => {
       // Create a new entry
       const newEntry = {
         date: currentDate,
-        tasks: [todo],
+        tasks: todos.map((todo) => todo.task),
       };
 
       setUserData({
@@ -55,18 +60,9 @@ export const TodoWrapper = () => {
       });
     }
 
-    updateLocalStorageData({ todos: newTodos, entries: userData.entries });
-    setTodos(newTodos);
-    console.log("Date:", currentDate);
-    console.log("Number of Tasks:", newTodos.length);
+    updateLocalStorageData({ todos, entries: userData.entries });
   };
 
-  const updateLocalStorageData = (data) => {
-    console.log("Updated Todo Data:", data.todos);
-    console.log("Updated Entries:", data.entries);
-
-    localStorage.setItem("userData", JSON.stringify(data));
-  };
   const toggleComplete = (id) => {
     setTodos(
       todos.map((todo) =>
@@ -78,6 +74,7 @@ export const TodoWrapper = () => {
   const deleteTodo = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
+
   const editTodo = (id) => {
     setTodos(
       todos.map((todo) =>
@@ -85,9 +82,11 @@ export const TodoWrapper = () => {
       )
     );
   };
+
   const clearCompleted = () => {
     setTodos(todos.filter((todo) => !todo.completed));
   };
+
   const editTask = (task, id) => {
     setTodos(
       todos.map((todo) =>
@@ -95,8 +94,10 @@ export const TodoWrapper = () => {
       )
     );
   };
+
   const anyCompletedTodos = todos.some((todo) => todo.completed);
   const todoCount = todos.length;
+
   return (
     <div className="TodoWrapper">
       <h1>Get Things Done!</h1>
@@ -115,18 +116,18 @@ export const TodoWrapper = () => {
           />
         )
       )}
+
       <div className="taskCount">
         <p>
           Tasks: {todoCount}{" "}
           <FontAwesomeIcon
-            onClick={() =>
-              updateLocalStorageData({ todos, entries: userData.entries })
-            }
+            onClick={saveUserData}
             className="faSave"
             icon={faSave}
-          />{" "}
+          />
         </p>
       </div>
+
       {anyCompletedTodos && (
         <button type="submit" className="clear-btn" onClick={clearCompleted}>
           Clear completed
