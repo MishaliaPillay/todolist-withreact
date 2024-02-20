@@ -7,12 +7,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { getLocalStorageData, updateLocalStorageData } from "./LocalStorage";
 
-export const TodoWrapper = () => {
+export const TodoWrapper = ({ searchQuery }) => {
   const [todos, setTodos] = useState([]);
   const [userData, setUserData] = useState({ entries: [] });
-
-  const allEntries = userData.entries;
-  console.log("all entries", allEntries);
 
   useEffect(() => {
     const storedData = getLocalStorageData();
@@ -98,14 +95,19 @@ export const TodoWrapper = () => {
   const anyCompletedTodos = todos.some((todo) => todo.completed);
   const todoCount = todos.length;
 
+  // Filter todos based on the search query
+  const filteredTodos = todos.filter((todo) =>
+    todo.task.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="TodoWrapper">
       <h1>Get Things Done!</h1>
       <TodoForm addTodo={addTodo} />
 
-      {todos.map((todo, index) =>
+      {filteredTodos.map((todo, index) =>
         todo.isEditing ? (
-          <EditTodoForm editTodo={editTask} task={todo} />
+          <EditTodoForm editTodo={editTask} task={todo} key={index} />
         ) : (
           <Todo
             task={todo}

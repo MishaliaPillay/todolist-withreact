@@ -24,16 +24,18 @@ const TodoForm = ({ addTodo }) => {
 
   return (
     <form className="TodoForm" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        className={`todo-input ${isEmpty ? "empty" : ""}`}
-        value={value}
-        placeholder={placeholder}
-        onChange={handleChange}
-      />
-      <button type="submit" className="todo-btn">
-        Add Task
-      </button>
+      <div className="inputContainer">
+        <input
+          type="text"
+          className={`todo-input ${isEmpty ? "empty" : ""}`}
+          value={value}
+          placeholder={placeholder}
+          onChange={handleChange}
+        />
+        <button type="submit" className="todo-btn">
+          Add Task
+        </button>
+      </div>
     </form>
   );
 };
