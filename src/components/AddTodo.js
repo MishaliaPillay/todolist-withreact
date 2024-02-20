@@ -8,7 +8,9 @@ const AddTodoButton = ({ addTodo }) => {
   const [date, setDate] = useState(new Date());
 
   const handleAddTodo = () => {
+    console.log("handleAddTodo called");
     setShowAddTodoModal(true);
+    console.log("Current Todo:", todo); // Log the current value of todo
     if (todo.trim() !== "") {
       // Create a new todo object
       const newTodo = {
@@ -16,11 +18,13 @@ const AddTodoButton = ({ addTodo }) => {
         task: todo,
         completed: false,
       };
-      console.log("New Todo:", newTodo); // Log the new todo
+      console.log("New Todo:", newTodo);
       // Call the addTodo function from props to add the new todo
       addTodo(newTodo);
       // Clear the input field
       setTodo("");
+      // Close the modal
+      handleCloseModal();
     }
   };
 
@@ -41,10 +45,11 @@ const AddTodoButton = ({ addTodo }) => {
 
   return (
     <div>
-      <button className="add-todo-btn" onClick={handleAddTodo}>
-        <FontAwesomeIcon icon={faPlusCircle} /> Add Todo
-      </button>
-
+      {!showAddTodoModal && ( // Render button only if modal is not shown
+        <button className="add-todo-btn" onClick={handleAddTodo}>
+          <FontAwesomeIcon icon={faPlusCircle} /> Add Todo
+        </button>
+      )}
       {/* Modal or Form for adding a to-do item */}
       {showAddTodoModal && (
         <div className="add-todo-modal">
@@ -59,12 +64,20 @@ const AddTodoButton = ({ addTodo }) => {
             />
             <input
               type="date"
-              value={date.toISOString().split("T")[0]} // Set date value as string
+              value={date.toISOString().split("T")[0]}
               onChange={(e) => setDate(new Date(e.target.value))}
               required
             />
-            <button type="submit">Add</button>
-            <button onClick={handleCloseModal}>Cancel</button>
+            <button className="todo-btnn" onClick={handleAddTodo}>
+              Add Todo
+            </button>
+            <button
+              type="button"
+              className="todo-btnn"
+              onClick={handleCloseModal}
+            >
+              Cancel
+            </button>
           </form>
         </div>
       )}

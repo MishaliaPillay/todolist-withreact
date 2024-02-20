@@ -72,7 +72,13 @@ h1 {
   cursor: pointer;
   padding: 0.5em;
 }
+.todo-btnn {
+  cursor: pointer;
+  background: #00a0a9;
+  color: #fff;
 
+  padding: 0.15rem;
+}
 .taskCount {
   float: left;
 }
