@@ -1,9 +1,9 @@
 import "./App.css";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Calendar from "./components/Calendar";
 import SidePanel from "./components/SidePanel";
 import TodoWrapper from "./components/TodoWrapper";
-import React, { useState } from "react";
 
 function App() {
   // Define state variables separately
@@ -12,7 +12,9 @@ function App() {
 
   // Define addTodo function to update todoList state
   const addTodo = (newTodo) => {
-    setTodoList([...todoList, newTodo]);
+    const newTodoList = [...todoList, newTodo];
+    setTodoList(newTodoList);
+    console.log("New Todo List:", newTodoList); // Log the updated todo list
   };
 
   return (
@@ -30,10 +32,17 @@ function App() {
           <Route
             path="/"
             element={
-              <TodoWrapper searchQuery={searchQuery} todoList={todoList} />
-            }
+              <TodoWrapper
+                searchQuery={searchQuery}
+                todoList={todoList}
+                setTodoList={setTodoList} // Pass todoList and setTodoList to TodoWrapper
+              />
+            } // Pass todoList to TodoWrapper
           />
-          <Route path="/calendar" element={<Calendar />} />
+          <Route
+            path="/calendar"
+            element={<Calendar todoList={todoList} />} // Pass todoList to Calendar
+          />
         </Routes>
       </div>{" "}
     </Router>

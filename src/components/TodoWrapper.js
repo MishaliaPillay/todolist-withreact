@@ -139,4 +139,9 @@ export const TodoWrapper = ({ searchQuery }) => {
   );
 };
 
+export const getStoredData = () => {
+  const storedData = getLocalStorageData();
+  return storedData;
+};
+
 export default TodoWrapper;
