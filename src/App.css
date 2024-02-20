@@ -93,7 +93,35 @@ h1 {
   border-radius: 5px;
   margin-bottom: 1rem;
 }
-
+.link {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  cursor: pointer;
+  background: #00a0a9;
+  color: #fff;
+  border: none;
+  width: 100%;
+  text-decoration: none;
+  padding: 0.25em;
+  text-align: left;
+  font-size: 1rem;
+}
+.icon {
+  margin-right: 0.5em;
+}
+.sideBtn {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  cursor: pointer;
+  background: #00a0a9;
+  color: #fff;
+  border: none;
+  width: 100%;
+  text-decoration: none;
+  padding: 0.25em;
+  text-align: left;
+  font-size: 1rem;
+}
 .fa-trash {
   margin-left: 0.75rem;
 }
@@ -172,15 +200,21 @@ h1 {
   margin-right: 10px;
 }
 
-.search-btn {
+.searchField {
+  align-content: center;
+
   padding: 10px;
-  background-color: #007bff;
-  color: #fff;
+  background-color: white;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  width: 100%;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
-
+.searchField::placeholder {
+  color: #00a0a9;
+}
 .search-btn:hover {
   background-color: #0056b3;
 }

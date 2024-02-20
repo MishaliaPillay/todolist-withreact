@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { getLocalStorageData, updateLocalStorageData } from "./LocalStorage";
 
 const AddTodoButton = ({ addTodo }) => {
   const [showAddTodoModal, setShowAddTodoModal] = useState(false);
@@ -8,19 +9,24 @@ const AddTodoButton = ({ addTodo }) => {
   const [date, setDate] = useState(new Date());
 
   const handleAddTodo = () => {
-    console.log("handleAddTodo called");
     setShowAddTodoModal(true);
-    console.log("Current Todo:", todo); // Log the current value of todo
     if (todo.trim() !== "") {
       // Create a new todo object
       const newTodo = {
         id: new Date().getTime(),
         task: todo,
+        date: date.toISOString().split("T")[0], // Save the date as a string
         completed: false,
       };
-      console.log("New Todo:", newTodo);
       // Call the addTodo function from props to add the new todo
       addTodo(newTodo);
+      // Update local storage data
+      const existingData = getLocalStorageData() || { todos: [] };
+      const updatedData = {
+        ...existingData,
+        todos: [...existingData.todos, newTodo],
+      };
+      updateLocalStorageData(updatedData);
       // Clear the input field
       setTodo("");
       // Close the modal
@@ -46,8 +52,9 @@ const AddTodoButton = ({ addTodo }) => {
   return (
     <div>
       {!showAddTodoModal && ( // Render button only if modal is not shown
-        <button className="add-todo-btn" onClick={handleAddTodo}>
-          <FontAwesomeIcon icon={faPlusCircle} /> Add Todo
+        <button className="sideBtn" onClick={handleAddTodo}>
+          <FontAwesomeIcon className="icon" icon={faPlusCircle} />
+          Add Todo
         </button>
       )}
       {/* Modal or Form for adding a to-do item */}

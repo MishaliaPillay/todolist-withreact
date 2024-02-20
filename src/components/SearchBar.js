@@ -5,6 +5,7 @@ const SearchBar = ({ searchQuery, setSearchQuery }) => {
     <div>
       {/* Search Bar */}
       <input
+        className="searchField"
         type="text"
         placeholder="Search tasks..."
         value={searchQuery}
