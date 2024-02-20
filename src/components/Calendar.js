@@ -1,28 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import Fullcalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
 
-const Calendar = () => {
-  const [todos, setTodos] = useState([]);
-
-  useEffect(() => {
-    // Retrieve saved todos from localStorage
-    const savedTodos = JSON.parse(localStorage.getItem("todos")) || [];
-    setTodos(savedTodos);
-  }, []);
-
+function Calendar() {
   return (
-    <div>
-      <h1>Calendar Page</h1>
-      {/* Display todos in a grid */}
-      <div>
-        {todos.map((todo) => (
-          <div key={todo.id}>
-            <p>{todo.task}</p>
-            <p>{todo.date}</p>
-          </div>
-        ))}
-      </div>
+    <div className="calendar">
+      <Fullcalendar 
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        initialView={"dayGridMonth"}
+        headerToolbar={{
+          start: "today prev,next", // will normally be on the left. if RTL, will be on the right
+          center: "title",
+          end: "dayGridMonth,timeGridWeek,timeGridDay", // will normally be on the right. if RTL, will be on the left
+        }}
+        height={"90vh"}
+      />
     </div>
   );
-};
+}
 
 export default Calendar;
