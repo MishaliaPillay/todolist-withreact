@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import TodoForm from "./TodoForm";
-import { v4 as uuidv4 } from "uuid";
 import Todo from "./Todo";
 import EditTodoForm from "./EditTodoForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,29 +9,27 @@ import { getLocalStorageData, updateLocalStorageData } from "./LocalStorage";
 export const TodoWrapper = ({ searchQuery }) => {
   const [todos, setTodos] = useState([]);
   const [userData, setUserData] = useState({ entries: [] });
-  const [date, setDate] = useState(new Date());
+
   useEffect(() => {
     const storedData = getLocalStorageData();
-    console.log("stored data", storedData);
-    if (storedData) {
+    if (storedData && storedData.todos) {
       setUserData(storedData);
       setTodos(storedData.todos);
     }
   }, []);
 
   const addTodo = (todo) => {
-    const currentDate = new Date().toLocaleDateString();
     const newTodo = {
       id: new Date().getTime(),
       task: todo,
       completed: false,
       isEditing: false,
-      date: date.toISOString().split("T")[0], // Include the date the task was added
+      date: new Date().toISOString().split("T")[0],
     };
 
     const newTodos = [...todos, newTodo];
-
     setTodos(newTodos);
+    updateStoredData({ todos: newTodos, entries: userData.entries });
   };
 
   const saveUserData = () => {
@@ -42,7 +39,6 @@ export const TodoWrapper = ({ searchQuery }) => {
     );
 
     if (existingEntryIndex !== -1) {
-      // Update existing entry
       const updatedEntries = [...userData.entries];
       updatedEntries[existingEntryIndex].tasks = todos.map((todo) => todo.task);
 
@@ -50,7 +46,6 @@ export const TodoWrapper = ({ searchQuery }) => {
         entries: updatedEntries,
       });
     } else {
-      // Create a new entry
       const newEntry = {
         date: currentDate,
         tasks: todos.map((todo) => todo.task),
@@ -96,13 +91,14 @@ export const TodoWrapper = ({ searchQuery }) => {
     );
   };
 
-  const anyCompletedTodos = todos.some((todo) => todo.completed);
-  const todoCount = todos.length;
+  const anyCompletedTodos = todos && todos.some((todo) => todo.completed);
+  const todoCount = todos ? todos.length : 0;
 
-  // Filter todos based on the search query
-  const filteredTodos = todos.filter((todo) =>
-    todo.task.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTodos = todos
+    ? todos.filter((todo) =>
+        todo.task.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
 
   return (
     <div className="TodoWrapper">
@@ -144,10 +140,11 @@ export const TodoWrapper = ({ searchQuery }) => {
 };
 
 export const getStoredData = () => {
-  const storedData = getLocalStorageData();
-  return storedData;
+  return getLocalStorageData();
 };
+
 export const updateStoredData = (data) => {
-  updateStoredData(data);
+  updateLocalStorageData(data);
 };
+
 export default TodoWrapper;
