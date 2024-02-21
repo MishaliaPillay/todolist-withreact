@@ -10,7 +10,7 @@ import { getLocalStorageData, updateLocalStorageData } from "./LocalStorage";
 export const TodoWrapper = ({ searchQuery }) => {
   const [todos, setTodos] = useState([]);
   const [userData, setUserData] = useState({ entries: [] });
-
+  const [date, setDate] = useState(new Date());
   useEffect(() => {
     const storedData = getLocalStorageData();
     console.log("stored data", storedData);
@@ -21,14 +21,18 @@ export const TodoWrapper = ({ searchQuery }) => {
   }, []);
 
   const addTodo = (todo) => {
-    const newTodos = [
-      ...todos,
-      { id: uuidv4(), task: todo, completed: false, isEditing: false },
-    ];
+    const currentDate = new Date().toLocaleDateString();
+    const newTodo = {
+      id: new Date().getTime(),
+      task: todo,
+      completed: false,
+      isEditing: false,
+      date: date.toISOString().split("T")[0], // Include the date the task was added
+    };
+
+    const newTodos = [...todos, newTodo];
 
     setTodos(newTodos);
-    console.log("Date:", new Date().toLocaleDateString());
-    console.log("Number of Tasks:", newTodos.length);
   };
 
   const saveUserData = () => {
@@ -143,5 +147,7 @@ export const getStoredData = () => {
   const storedData = getLocalStorageData();
   return storedData;
 };
-
+export const updateStoredData = (data) => {
+  updateStoredData(data);
+};
 export default TodoWrapper;

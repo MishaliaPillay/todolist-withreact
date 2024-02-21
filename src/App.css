@@ -15,10 +15,7 @@ TodoWrapper {
   align-items: center;
   height: 100vh;
 }
-lendar {
-  margin-left: 30%;
-  width: 50%;
-}
+
 .App {
   text-align: center;
 }
@@ -137,6 +134,7 @@ h1 {
 }
 .calendar {
   background-color: aliceblue;
+  width: 100vh;
 }
 .faCalendarDays {
   margin-left: 0.75rem;

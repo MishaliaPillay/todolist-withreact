@@ -12,15 +12,11 @@ function Calendar() {
   // Fetch stored data on component mount
   useEffect(() => {
     const storedData = getStoredData();
-    console.log(storedData);
     if (storedData && storedData.todos) {
-      const updatedEvents = storedData.todos.flatMap((entry) =>
-        entry.tasks.map((task) => ({
-          title: task,
-          start: entry.date, // Assuming each entry has a 'date' property
-          // You can add more properties like end, etc. if needed
-        }))
-      );
+      const updatedEvents = storedData.todos.map((data) => ({
+        title: data.task,
+        start: data.date,
+      }));
       setEvents(updatedEvents);
     }
   }, []);
