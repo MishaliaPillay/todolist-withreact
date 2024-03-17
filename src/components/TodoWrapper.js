@@ -9,6 +9,7 @@ import { getLocalStorageData, updateLocalStorageData } from "./LocalStorage";
 export const TodoWrapper = ({ searchQuery }) => {
   const [todos, setTodos] = useState([]);
   const [userData, setUserData] = useState({ entries: [] });
+  const [clearedItems, setClearedItems] = useState({});
 
   useEffect(() => {
     const storedData = getLocalStorageData();
@@ -31,8 +32,71 @@ export const TodoWrapper = ({ searchQuery }) => {
     setTodos(newTodos);
     updateStoredData({ todos: newTodos, entries: userData.entries });
   };
+  const toggleComplete = (id) => {
+    setTodos((prevTodos) => {
+      const updatedTodos = prevTodos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      );
+      console.log("Updated Todos:", updatedTodos); // Log updated todos
+      saveUserData(updatedTodos); // Call saveUserData after updating state
+      updateStoredData({ todos: updatedTodos, entries: userData.entries }); // Update local storage data
+      return updatedTodos;
+    });
+  };
 
-  const saveUserData = () => {
+  const deleteTodo = (id) => {
+    setTodos((prevTodos) => {
+      const updatedTodos = prevTodos.filter((todo) => todo.id !== id);
+      updateStoredData({ todos: updatedTodos, entries: userData.entries }); // Update local storage immediately
+      return updatedTodos;
+    });
+
+    saveUserData(); // Call saveUserData after updating state
+  };
+
+  const editTodo = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
+      )
+    );
+  };
+  const editTask = (task, id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, task, isEditing: !todo.isEditing } : todo
+      )
+    );
+    console.log(todos);
+    updateLocalStorageData({ todos, entries: userData.entries });
+  };
+  const clearCompleted = () => {
+    setTodos((prevTodos) => {
+      // Filter completed items
+      const completedTodos = prevTodos.filter((todo) => todo.completed);
+
+      // Update the cleared items object
+      const currentDate = new Date().toISOString().split("T")[0];
+      const updatedClearedItems = {
+        ...clearedItems,
+        [currentDate]: [
+          ...(clearedItems[currentDate] || []),
+          ...completedTodos.map((todo) => todo.task),
+        ],
+      };
+      setClearedItems(updatedClearedItems);
+      console.log(updatedClearedItems);
+      // Update local storage data
+      updateStoredData({
+        todos: prevTodos.filter((todo) => !todo.completed),
+        entries: userData.entries,
+      });
+
+      return prevTodos.filter((todo) => !todo.completed);
+    });
+  };
+  const saveUserData = (updatedTodos) => {
+    console.log("Saving user data...");
     const currentDate = new Date().toLocaleDateString();
     const existingEntryIndex = userData.entries.findIndex(
       (entry) => entry.date === currentDate
@@ -58,39 +122,6 @@ export const TodoWrapper = ({ searchQuery }) => {
 
     updateLocalStorageData({ todos, entries: userData.entries });
   };
-
-  const toggleComplete = (id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
-
-  const deleteTodo = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
-
-  const editTodo = (id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
-      )
-    );
-  };
-
-  const clearCompleted = () => {
-    setTodos(todos.filter((todo) => !todo.completed));
-  };
-
-  const editTask = (task, id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, task, isEditing: !todo.isEditing } : todo
-      )
-    );
-  };
-
   const anyCompletedTodos = todos && todos.some((todo) => todo.completed);
   const todoCount = todos ? todos.length : 0;
 
