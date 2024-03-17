@@ -16,6 +16,7 @@ export const TodoWrapper = ({ searchQuery }) => {
     if (storedData && storedData.todos) {
       setUserData(storedData);
       setTodos(storedData.todos);
+      setClearedItems(storedData.clearedItems || {}); // Set cleared items from local storage if available
     }
   }, []);
 
@@ -90,6 +91,7 @@ export const TodoWrapper = ({ searchQuery }) => {
       updateStoredData({
         todos: prevTodos.filter((todo) => !todo.completed),
         entries: userData.entries,
+        clearedItems: updatedClearedItems, // Include updatedClearedItems in the update data
       });
 
       return prevTodos.filter((todo) => !todo.completed);
