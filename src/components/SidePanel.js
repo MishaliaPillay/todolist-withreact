@@ -5,8 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import AddTodoButton from "./AddTodo";
+import Heatmap from "./Heatmap";
 
-const SidePanel = ({ searchQuery, setSearchQuery, addTodo }) => {
+const SidePanel = ({ searchQuery, setSearchQuery, addTodo, clearedItems }) => {
+  console.log("Cleared Items in SidePanel:", clearedItems); // Log clearedItems
+
   return (
     <div className="side-panel">
       <h2>Welcome Back</h2>
@@ -20,6 +23,8 @@ const SidePanel = ({ searchQuery, setSearchQuery, addTodo }) => {
         <FontAwesomeIcon className="icon" icon={faList} />
         All Tasks
       </Link>
+      <Heatmap clearedItems={clearedItems} />{" "}
+      {/* Pass clearedItems to Heatmap */}
     </div>
   );
 };

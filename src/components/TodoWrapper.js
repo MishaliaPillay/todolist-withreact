@@ -71,32 +71,44 @@ export const TodoWrapper = ({ searchQuery }) => {
     console.log(todos);
     updateLocalStorageData({ todos, entries: userData.entries });
   };
+  const updateClearedItems = (prevTodos, clearedItems) => {
+    // Filter completed items
+    const completedTodos = prevTodos.filter((todo) => todo.completed);
+
+    // Update the cleared items object
+    const currentDate = new Date().toISOString().split("T")[0];
+    const updatedClearedItems = {
+      ...clearedItems,
+      [currentDate]: [
+        ...(clearedItems[currentDate] || []),
+        ...completedTodos.map((todo) => todo.task),
+      ],
+    };
+
+    return updatedClearedItems;
+  };
+
   const clearCompleted = () => {
     setTodos((prevTodos) => {
-      // Filter completed items
-      const completedTodos = prevTodos.filter((todo) => todo.completed);
+      // Extracting the cleared items logic
+      const updatedClearedItems = updateClearedItems(prevTodos, clearedItems);
 
-      // Update the cleared items object
-      const currentDate = new Date().toISOString().split("T")[0];
-      const updatedClearedItems = {
-        ...clearedItems,
-        [currentDate]: [
-          ...(clearedItems[currentDate] || []),
-          ...completedTodos.map((todo) => todo.task),
-        ],
-      };
+      // Update the state with the new cleared items
       setClearedItems(updatedClearedItems);
-      console.log(updatedClearedItems);
+      console.log("test", updatedClearedItems);
+
       // Update local storage data
       updateStoredData({
         todos: prevTodos.filter((todo) => !todo.completed),
         entries: userData.entries,
         clearedItems: updatedClearedItems, // Include updatedClearedItems in the update data
       });
-
+      console.log("fyvuy", updatedClearedItems);
+      // Return the filtered todos
       return prevTodos.filter((todo) => !todo.completed);
     });
   };
+
   const saveUserData = (updatedTodos) => {
     console.log("Saving user data...");
     const currentDate = new Date().toLocaleDateString();
@@ -179,5 +191,30 @@ export const getStoredData = () => {
 export const updateStoredData = (data) => {
   updateLocalStorageData(data);
 };
+// Exporting the updateClearedItems function
+export const updatedClearedItems = (prevTodos = [], clearedItems = {}) => {
+  // Check if prevTodos or clearedItems are undefined and assign default values if necessary
+  if (!prevTodos || !clearedItems) {
+    console.error("prevTodos or clearedItems is undefined");
+    return {};
+  }
 
+  // Filter completed items
+  const completedTodos = prevTodos.filter((todo) => todo.completed);
+
+  // Update the cleared items object
+  const currentDate = new Date().toISOString().split("T")[0];
+  const updateClearedItems = {
+    ...clearedItems,
+    [currentDate]: [
+      ...(clearedItems[currentDate] || []),
+      ...completedTodos.map((todo) => todo.task),
+    ],
+  };
+
+  // Log the updatedClearedItems object
+  console.log("Updated Cleared Itemsmjbjh:", updateClearedItems);
+
+  return updatedClearedItems;
+};
 export default TodoWrapper;

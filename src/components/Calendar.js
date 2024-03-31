@@ -3,7 +3,8 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { getStoredData } from "./TodoWrapper";
+import { getStoredData, updateStoredData } from "./TodoWrapper";
+import "./Calendar.css"; // Import CSS for styling
 
 function Calendar() {
   // State to store events
@@ -33,26 +34,44 @@ function Calendar() {
       };
 
       // Update events state with new event
-      setEvents([...events, newEvent]);
+      setEvents((prevEvents) => [...prevEvents, newEvent]);
+
+      // Update stored data with the latest state
+      updateStoredData((prevData) => [...prevData, newEvent]);
     }
   };
 
+  // Function to handle event drop
+  const handleEventDrop = (arg) => {
+    // Update event's start date in state
+    const updatedEvents = events.map((event) =>
+      event === arg.event ? { ...event, start: arg.event.start } : event
+    );
+    setEvents(updatedEvents);
+
+    // Update stored data with the latest state
+    updateStoredData(updatedEvents);
+  };
+
   return (
-    <div className="calendar">
+    <div className="calendar-container">
       <h1>Calendar Page</h1>
       {/* Render the FullCalendar component */}
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView={"dayGridMonth"}
-        headerToolbar={{
-          start: "today prev,next",
-          center: "title",
-          end: "dayGridMonth,timeGridWeek,timeGridDay",
-        }}
-        height={"90vh"}
-        events={events} // Pass the events state to the FullCalendar component
-        dateClick={handleDateClick} // Handle date click event
-      />
+      <div className="calendar-wrapper">
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView={"dayGridMonth"}
+          headerToolbar={{
+            start: "today prev,next",
+            center: "title",
+            end: "dayGridMonth,timeGridWeek,timeGridDay",
+          }}
+          events={events} // Pass the events state to the FullCalendar component
+          dateClick={handleDateClick} // Handle date click event
+          eventDrop={handleEventDrop} // Handle event drop event
+          editable={true} // Enable event dragging
+        />
+      </div>
     </div>
   );
 }
