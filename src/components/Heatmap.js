@@ -1,99 +1,86 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { getLocalStorageData } from "./LocalStorage"; // Import function to get stored data from local storage
+import { getLocalStorageData } from "./LocalStorage";
 
 const Heatmap = () => {
   const svgRef = useRef();
-
   useEffect(() => {
-    // Get stored data from local storage
     const storedData = getLocalStorageData();
-
-    // Retrieve cleared items from stored data
     const clearedItems = storedData.clearedItems || {};
 
-    // D3 code for heatmap
-    const margin = { top: 20, right: 30, bottom: 60, left: 60 };
-    const width = 800 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    console.log("Cleared Items:", clearedItems); // Log clearedItems to check its structure
 
-    const svg = d3
-      .select(svgRef.current)
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
+    // Get the current year and month
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
 
-    const data = Object.entries(clearedItems).map(([date, items]) => {
-      const count = items.tasks.length || 0; // Count the number of tasks
+    // Calculate the number of days in the current month
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    const data = Array.from({ length: daysInMonth }, (_, i) => {
+      const date = new Date(currentYear, currentMonth, i + 1);
+      const dateString = date.toISOString().split("T")[0];
+      const count = clearedItems[dateString]?.tasks.length || 0;
+      console.log(`Count for ${dateString}:`, count); // Log the count for each date
       return {
-        date: new Date(date),
+        date: date,
         count: count,
       };
     });
 
-    const x = d3
-      .scaleTime()
-      .domain(d3.extent(data, (d) => d.date))
-      .range([0, width]);
+    const margin = { top: 20, right: 30, bottom: 60, left: 60 };
+    const cellSize = 20;
+    const calendarWidth = cellSize * daysInMonth;
+    const calendarHeight = cellSize * 7; // 7 days in a week
 
-    const y = d3
-      .scaleLinear()
-      .domain([0, d3.max(data, (d) => d.count)])
-      .nice()
-      .range([height, 0]);
+    const svg = d3
+      .select(svgRef.current)
+      .attr("width", calendarWidth + margin.left + margin.right)
+      .attr("height", calendarHeight + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
     const colorScale = d3
       .scaleSequential(d3.interpolateReds)
       .domain([0, d3.max(data, (d) => d.count)]);
-
-    const xAxis = d3.axisBottom(x);
-    const yAxis = d3.axisLeft(y);
-
-    svg.append("g").attr("transform", `translate(0,${height})`).call(xAxis);
-
-    svg.append("g").call(yAxis);
 
     svg
       .selectAll(".rect")
       .data(data)
       .enter()
       .append("rect")
-      .attr("x", (d) => x(d.date))
-      .attr("y", (d) => y(d.count))
-      .attr("width", width / data.length)
-      .attr("height", (d) => height - y(d.count))
-      .attr("fill", (d) => colorScale(d.count))
+      .attr("x", (d, i) => (i % 7) * cellSize) // Position based on the day of the week
+      .attr("y", (d, i) => Math.floor(i / 7) * cellSize) // Position based on the week number
+      .attr("width", cellSize)
+      .attr("height", cellSize)
+      .style("fill", (d) => (d.count > 0 ? colorScale(d.count) : "#ebedf0")) // GitHub's background color for no data
       .on("mouseover", (event, d) => {
-        // Show tooltip on mouseover
+        const tooltip = d3.select(".tooltip");
         tooltip.style("display", "block").html(
           `<div>Date: ${d.date.toDateString()}</div>
-            <div>Tasks: ${d.count}</div>`
+          <div>Tasks: ${d.count}</div>`
         );
       })
       .on("mousemove", (event) => {
-        // Position tooltip next to cursor
-        tooltip
+        d3.select(".tooltip")
           .style("left", event.pageX + 10 + "px")
           .style("top", event.pageY - 10 + "px");
       })
       .on("mouseout", () => {
-        // Hide tooltip on mouseout
-        tooltip.style("display", "none");
+        d3.select(".tooltip").style("display", "none");
       });
 
     // Create a tooltip
-    const tooltip = d3
-      .select("body")
+    d3.select("body")
       .append("div")
       .attr("class", "tooltip")
       .style("display", "none");
 
     return () => {
-      // Cleanup function
-      tooltip.remove();
+      d3.select(".tooltip").remove();
     };
-  }, []); // Empty dependency array since we only want to run this once when the component mounts
+  }, []);
 
   return <svg ref={svgRef}></svg>;
 };

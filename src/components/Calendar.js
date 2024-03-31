@@ -36,8 +36,15 @@ function Calendar() {
       // Update events state with new event
       setEvents((prevEvents) => [...prevEvents, newEvent]);
 
-      // Update stored data with the latest state
-      updateStoredData((prevData) => [...prevData, newEvent]);
+      // Retrieve todo items from storage
+      const storedData = getStoredData();
+      const todos = storedData && storedData.todos ? storedData.todos : [];
+
+      // Update stored data with the latest state including both events and todo items
+      updateStoredData({
+        todos: [...todos],
+        events: [...todos, newEvent],
+      });
     }
   };
 
@@ -49,8 +56,15 @@ function Calendar() {
     );
     setEvents(updatedEvents);
 
-    // Update stored data with the latest state
-    updateStoredData(updatedEvents);
+    // Retrieve todo items from storage
+    const storedData = getStoredData();
+    const todos = storedData && storedData.todos ? storedData.todos : [];
+
+    // Update stored data with the new dates of the items including both events and todo items
+    updateStoredData({
+      todos: [...todos],
+      events: [...todos, ...updatedEvents],
+    });
   };
 
   return (

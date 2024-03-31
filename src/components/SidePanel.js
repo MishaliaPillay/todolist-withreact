@@ -23,8 +23,8 @@ const SidePanel = ({ searchQuery, setSearchQuery, addTodo, clearedItems }) => {
         <FontAwesomeIcon className="icon" icon={faList} />
         All Tasks
       </Link>
-      <Heatmap clearedItems={clearedItems} />{" "}
-      {/* Pass clearedItems to Heatmap */}
+      <Heatmap clearedItems={clearedItems} />
+      {""}
     </div>
   );
 };

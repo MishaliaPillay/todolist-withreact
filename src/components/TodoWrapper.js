@@ -127,30 +127,37 @@ export const TodoWrapper = ({ searchQuery }) => {
   const saveUserData = (updatedTodos) => {
     console.log("Saving user data...");
     const currentDate = new Date().toLocaleDateString();
-    const existingEntryIndex = userData.entries.findIndex(
-      (entry) => entry.date === currentDate
-    );
 
-    if (existingEntryIndex !== -1) {
-      const updatedEntries = [...userData.entries];
-      updatedEntries[existingEntryIndex].tasks = todos.map((todo) => todo.task);
+    // Check if userData.entries is defined before accessing its properties
+    if (userData.entries) {
+      const existingEntryIndex = userData.entries.findIndex(
+        (entry) => entry.date === currentDate
+      );
 
-      setUserData({
-        entries: updatedEntries,
-      });
-    } else {
-      const newEntry = {
-        date: currentDate,
-        tasks: todos.map((todo) => todo.task),
-      };
+      if (existingEntryIndex !== -1) {
+        const updatedEntries = [...userData.entries];
+        updatedEntries[existingEntryIndex].tasks = todos.map(
+          (todo) => todo.task
+        );
 
-      setUserData({
-        entries: [...userData.entries, newEntry],
-      });
+        setUserData({
+          entries: updatedEntries,
+        });
+      } else {
+        const newEntry = {
+          date: currentDate,
+          tasks: todos.map((todo) => todo.task),
+        };
+
+        setUserData({
+          entries: [...userData.entries, newEntry],
+        });
+      }
     }
 
     updateLocalStorageData({ todos, entries: userData.entries });
   };
+
   const anyCompletedTodos = todos && todos.some((todo) => todo.completed);
   const todoCount = todos ? todos.length : 0;
 
@@ -205,41 +212,6 @@ export const getStoredData = () => {
 
 export const updateStoredData = (data) => {
   updateLocalStorageData(data);
-};
-// TodoWrapper.js
-export const updateClearedItems = (prevTodos = [], clearedItems = {}) => {
-  // Check if prevTodos or clearedItems are undefined and assign default values if necessary
-  if (!prevTodos || !clearedItems) {
-    console.error("prevTodos or clearedItems is undefined");
-    return {};
-  }
-
-  // Get the current date
-  const currentDate = new Date().toISOString().split("T")[0];
-
-  // Filter completed items for the current date
-  const completedTodos = prevTodos.filter(
-    (todo) => todo.completed && todo.date === currentDate
-  );
-
-  // Get the tasks of completed items for the current date
-  const completedTasks = completedTodos.map((todo) => todo.task);
-
-  // Update the cleared items object
-  const updatedClearedItems = {
-    ...clearedItems,
-    [currentDate]: {
-      tasks: [...(clearedItems[currentDate]?.tasks || []), ...completedTasks],
-      count: completedTasks.length, // Number of completed items
-      // Include tasks that are cleared
-      clearedTasks: completedTasks,
-    },
-  };
-
-  // Log the updatedClearedItems object
-  console.log("Updated Cleared Items:", updatedClearedItems);
-
-  return updatedClearedItems;
 };
 
 export default TodoWrapper;
