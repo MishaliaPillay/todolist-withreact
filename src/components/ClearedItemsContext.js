@@ -1,18 +1,17 @@
 import React, { createContext, useContext, useState } from "react";
 
+// Create ClearedItemsContext
 const ClearedItemsContext = createContext();
 
+// Custom hook to use ClearedItemsContext
 export const useClearedItems = () => useContext(ClearedItemsContext);
 
+// ClearedItemsProvider component
 export const ClearedItemsProvider = ({ children }) => {
-  const [clearedItems, setClearedItems] = useState({});
+  const [updatedClearedItems, setUpdatedClearedItems] = useState({});
 
-  const updateClearedItems = (updatedClearedItems) => {
-    setClearedItems(updatedClearedItems);
-  };
-  console.log(updateClearedItems);
   return (
-    <ClearedItemsContext.Provider value={{ clearedItems, updateClearedItems }}>
+    <ClearedItemsContext.Provider value={{ updatedClearedItems }}>
       {children}
     </ClearedItemsContext.Provider>
   );

@@ -1,16 +1,18 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { setClearedItems, updatedClearedItems } from "./TodoWrapper"; // Import setClearedItems and updateClearedItems from TodoWrapper // Import setClearedItems from TodoWrapper
+import { getLocalStorageData } from "./LocalStorage"; // Import function to get stored data from local storage
 
 const Heatmap = () => {
   const svgRef = useRef();
 
   useEffect(() => {
-    const clearedItems = updatedClearedItems(); // Call updateClearedItems to get the cleared items
+    // Get stored data from local storage
+    const storedData = getLocalStorageData();
+
+    // Retrieve cleared items from stored data
+    const clearedItems = storedData.clearedItems || {};
 
     // D3 code for heatmap
-    if (!clearedItems) return; // Return if clearedItems is undefined
-
     const margin = { top: 20, right: 30, bottom: 60, left: 60 };
     const width = 800 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
@@ -22,10 +24,13 @@ const Heatmap = () => {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const data = Object.entries(clearedItems).map(([date, items]) => ({
-      date: new Date(date),
-      count: items.length,
-    }));
+    const data = Object.entries(clearedItems).map(([date, items]) => {
+      const count = items.tasks.length || 0; // Count the number of tasks
+      return {
+        date: new Date(date),
+        count: count,
+      };
+    });
 
     const x = d3
       .scaleTime()
@@ -45,28 +50,10 @@ const Heatmap = () => {
     const xAxis = d3.axisBottom(x);
     const yAxis = d3.axisLeft(y);
 
-    svg
-      .append("text")
-      .attr("class", "x-axis-title")
-      .attr("text-anchor", "middle")
-      .attr("x", width / 2)
-      .attr("y", height + margin.top + 10)
-      .text("Date");
-
-    svg
-      .append("text")
-      .attr("class", "y-axis-title")
-      .attr("text-anchor", "middle")
-      .attr("transform", "rotate(-90)")
-      .attr("x", -height / 2)
-      .attr("y", -margin.left + 20)
-      .text("Count");
-
     svg.append("g").attr("transform", `translate(0,${height})`).call(xAxis);
 
     svg.append("g").call(yAxis);
 
-    // Draw rectangles for heatmap cells
     svg
       .selectAll(".rect")
       .data(data)
@@ -81,14 +68,14 @@ const Heatmap = () => {
         // Show tooltip on mouseover
         tooltip.style("display", "block").html(
           `<div>Date: ${d.date.toDateString()}</div>
-            <div>Items: ${d.count}</div>`
+            <div>Tasks: ${d.count}</div>`
         );
       })
       .on("mousemove", (event) => {
         // Position tooltip next to cursor
         tooltip
-          .style("left", event.pageX + 100 + "px")
-          .style("top", event.pageY + 100 + "px");
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY - 10 + "px");
       })
       .on("mouseout", () => {
         // Hide tooltip on mouseout

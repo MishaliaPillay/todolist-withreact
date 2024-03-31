@@ -10,7 +10,11 @@ export const TodoWrapper = ({ searchQuery }) => {
   const [todos, setTodos] = useState([]);
   const [userData, setUserData] = useState({ entries: [] });
   const [clearedItems, setClearedItems] = useState({});
+  // Call the function to get the stored data
+  const storedData = getLocalStorageData();
 
+  // Log the stored data to the console
+  console.log("Storedddddd Data:", storedData);
   useEffect(() => {
     const storedData = getLocalStorageData();
     if (storedData && storedData.todos) {
@@ -71,44 +75,55 @@ export const TodoWrapper = ({ searchQuery }) => {
     console.log(todos);
     updateLocalStorageData({ todos, entries: userData.entries });
   };
-  const updateClearedItems = (prevTodos, clearedItems) => {
-    // Filter completed items
-    const completedTodos = prevTodos.filter((todo) => todo.completed);
+  const updateClearedItems = (prevTodos = [], clearedItems = {}) => {
+    // Check if prevTodos or clearedItems are undefined and assign default values if necessary
+    if (!prevTodos || !clearedItems) {
+      console.error("prevTodos or clearedItems is undefined");
+      return {};
+    }
 
-    // Update the cleared items object
+    // Get the current date
     const currentDate = new Date().toISOString().split("T")[0];
+
+    // Filter completed items for the current date
+    const completedTodos = prevTodos.filter(
+      (todo) => todo.completed && todo.date === currentDate
+    );
+
+    const completedTasks = completedTodos.map((todo) => todo.task);
     const updatedClearedItems = {
       ...clearedItems,
-      [currentDate]: [
-        ...(clearedItems[currentDate] || []),
-        ...completedTodos.map((todo) => todo.task),
-      ],
+      [currentDate]: {
+        tasks: [...(clearedItems[currentDate]?.tasks || []), ...completedTasks],
+        count: completedTasks.length, // Number of completed items
+      },
     };
+
+    // Log the updatedClearedItems object
+    console.log("Updated Cleared Items:", updatedClearedItems);
 
     return updatedClearedItems;
   };
-
   const clearCompleted = () => {
     setTodos((prevTodos) => {
       // Extracting the cleared items logic
-      const updatedClearedItems = updateClearedItems(prevTodos, clearedItems);
+      const updatedClearedItems = updateClearedItems(prevTodos, clearedItems); // Call the locally defined updateClearedItems function
 
       // Update the state with the new cleared items
       setClearedItems(updatedClearedItems);
-      console.log("test", updatedClearedItems);
+      console.log("Cleared Items:", updatedClearedItems);
 
       // Update local storage data
       updateStoredData({
         todos: prevTodos.filter((todo) => !todo.completed),
         entries: userData.entries,
-        clearedItems: updatedClearedItems, // Include updatedClearedItems in the update data
+        clearedItems: updatedClearedItems,
       });
-      console.log("fyvuy", updatedClearedItems);
+
       // Return the filtered todos
       return prevTodos.filter((todo) => !todo.completed);
     });
   };
-
   const saveUserData = (updatedTodos) => {
     console.log("Saving user data...");
     const currentDate = new Date().toLocaleDateString();
@@ -191,30 +206,40 @@ export const getStoredData = () => {
 export const updateStoredData = (data) => {
   updateLocalStorageData(data);
 };
-// Exporting the updateClearedItems function
-export const updatedClearedItems = (prevTodos = [], clearedItems = {}) => {
+// TodoWrapper.js
+export const updateClearedItems = (prevTodos = [], clearedItems = {}) => {
   // Check if prevTodos or clearedItems are undefined and assign default values if necessary
   if (!prevTodos || !clearedItems) {
     console.error("prevTodos or clearedItems is undefined");
     return {};
   }
 
-  // Filter completed items
-  const completedTodos = prevTodos.filter((todo) => todo.completed);
+  // Get the current date
+  const currentDate = new Date().toISOString().split("T")[0];
+
+  // Filter completed items for the current date
+  const completedTodos = prevTodos.filter(
+    (todo) => todo.completed && todo.date === currentDate
+  );
+
+  // Get the tasks of completed items for the current date
+  const completedTasks = completedTodos.map((todo) => todo.task);
 
   // Update the cleared items object
-  const currentDate = new Date().toISOString().split("T")[0];
-  const updateClearedItems = {
+  const updatedClearedItems = {
     ...clearedItems,
-    [currentDate]: [
-      ...(clearedItems[currentDate] || []),
-      ...completedTodos.map((todo) => todo.task),
-    ],
+    [currentDate]: {
+      tasks: [...(clearedItems[currentDate]?.tasks || []), ...completedTasks],
+      count: completedTasks.length, // Number of completed items
+      // Include tasks that are cleared
+      clearedTasks: completedTasks,
+    },
   };
 
   // Log the updatedClearedItems object
-  console.log("Updated Cleared Itemsmjbjh:", updateClearedItems);
+  console.log("Updated Cleared Items:", updatedClearedItems);
 
   return updatedClearedItems;
 };
+
 export default TodoWrapper;
