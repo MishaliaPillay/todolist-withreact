@@ -7,8 +7,9 @@ import { getStoredData, updateStoredData } from "./TodoWrapper";
 import "./Calendar.css"; // Import CSS for styling
 
 function Calendar() {
-  // State to store events
+  // State to store events and todos
   const [events, setEvents] = useState([]);
+  const [todos, setTodos] = useState([]);
 
   // Fetch stored data on component mount
   useEffect(() => {
@@ -16,54 +17,67 @@ function Calendar() {
     if (storedData && storedData.todos) {
       const updatedEvents = storedData.todos.map((data) => ({
         title: data.task,
-        start: data.date,
+        date: data.date,
+        id: data.id,
       }));
+      console.log("tesrt", updatedEvents);
       setEvents(updatedEvents);
+      setTodos(storedData.todos);
     }
   }, []);
-
   // Function to handle date click event
   const handleDateClick = (arg) => {
     // Prompt user for event title
     const title = prompt("Enter event title:");
     if (title) {
-      // Create new event object with clicked date and provided title
+      // Generate unique ID for the todo item
+      const id = generateUniqueId();
+
+      // Create new event object with clicked date, provided title, and ID
       const newEvent = {
         title: title,
         start: arg.date, // Use clicked date
+        id: id, // Use generated unique ID
       };
 
-      // Update events state with new event
+      // Update events state with new event using the functional form of setEvents
       setEvents((prevEvents) => [...prevEvents, newEvent]);
 
-      // Retrieve todo items from storage
-      const storedData = getStoredData();
-      const todos = storedData && storedData.todos ? storedData.todos : [];
-
-      // Update stored data with the latest state including both events and todo items
+      // Update stored data with the latest state including both events and todos
       updateStoredData({
-        todos: [...todos],
-        events: [...todos, newEvent],
+        todos: [...todos, { task: title, date: arg.date, id: id }],
+        events: [...events, newEvent],
       });
     }
   };
 
+  // Function to generate unique IDs
+  const generateUniqueId = () => {
+    return Math.random().toString(36).substr(2, 9); // Generate a random string
+  };
+
   // Function to handle event drop
   const handleEventDrop = (arg) => {
-    // Update event's start date in state
-    const updatedEvents = events.map((event) =>
-      event === arg.event ? { ...event, start: arg.event.start } : event
+    // Find the corresponding todo item and update its date
+    const updatedTodos = todos.map((todo) =>
+      todo.id === arg.event.id ? { ...todo, date: arg.event.start } : todo
     );
+
+    // Update events state with the updated start date of the dropped event
+    const updatedEvents = events.map((event) =>
+      event.id === arg.event.id ? { ...event, start: arg.event.start } : event
+    );
+
+    // Update events state with the updated events
     setEvents(updatedEvents);
 
-    // Retrieve todo items from storage
-    const storedData = getStoredData();
-    const todos = storedData && storedData.todos ? storedData.todos : [];
+    // Update todos state with the updated todos
+    setTodos(updatedTodos);
 
-    // Update stored data with the new dates of the items including both events and todo items
+    // Update stored data with the updated todos and events
     updateStoredData({
-      todos: [...todos],
-      events: [...todos, ...updatedEvents],
+      todos: updatedTodos,
+      events: updatedEvents,
     });
   };
 

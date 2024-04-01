@@ -8,7 +8,7 @@ const Heatmap = () => {
     const storedData = getLocalStorageData();
     const clearedItems = storedData.clearedItems || {};
 
-    console.log("Cleared Items:", clearedItems); // Log clearedItems to check its structure
+    console.log("Cleared guyv8ybItems:", clearedItems); // Log clearedItems to check its structure
 
     // Get the current year and month
     const currentDate = new Date();

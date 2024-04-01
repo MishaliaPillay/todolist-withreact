@@ -1,3 +1,5 @@
+// TodoWrapper.js
+
 import React, { useState, useEffect } from "react";
 import TodoForm from "./TodoForm";
 import Todo from "./Todo";
@@ -9,18 +11,17 @@ import { getLocalStorageData, updateLocalStorageData } from "./LocalStorage";
 export const TodoWrapper = ({ searchQuery }) => {
   const [todos, setTodos] = useState([]);
   const [userData, setUserData] = useState({ entries: [] });
-  const [clearedItems, setClearedItems] = useState({});
-  // Call the function to get the stored data
+  const [clearedItems, setClearedItems] = useState({}); // Initialize clearedItems state
   const storedData = getLocalStorageData();
 
   // Log the stored data to the console
-  console.log("Storedddddd Data:", storedData);
+  console.log("Stored Data:", storedData);
   useEffect(() => {
     const storedData = getLocalStorageData();
     if (storedData && storedData.todos) {
       setUserData(storedData);
       setTodos(storedData.todos);
-      setClearedItems(storedData.clearedItems || {}); // Set cleared items from local storage if available
+      setClearedItems(storedData.clearedItems || {});
     }
   }, []);
 
@@ -29,14 +30,19 @@ export const TodoWrapper = ({ searchQuery }) => {
       id: new Date().getTime(),
       task: todo,
       completed: false,
-      isEditing: false,
+      isEditing: false, // Initialize isEditing state
       date: new Date().toISOString().split("T")[0],
     };
 
     const newTodos = [...todos, newTodo];
     setTodos(newTodos);
-    updateStoredData({ todos: newTodos, entries: userData.entries });
+    updateStoredData({
+      todos: newTodos,
+      entries: userData.entries,
+      clearedItems: updateClearedItems(newTodos, clearedItems),
+    });
   };
+
   const toggleComplete = (id) => {
     setTodos((prevTodos) => {
       const updatedTodos = prevTodos.map((todo) =>
@@ -44,7 +50,11 @@ export const TodoWrapper = ({ searchQuery }) => {
       );
       console.log("Updated Todos:", updatedTodos); // Log updated todos
       saveUserData(updatedTodos); // Call saveUserData after updating state
-      updateStoredData({ todos: updatedTodos, entries: userData.entries }); // Update local storage data
+      updateStoredData({
+        todos: updatedTodos,
+        entries: userData.entries,
+        clearedItems: updateClearedItems(updatedTodos, clearedItems),
+      }); // Update local storage data
       return updatedTodos;
     });
   };
@@ -52,7 +62,11 @@ export const TodoWrapper = ({ searchQuery }) => {
   const deleteTodo = (id) => {
     setTodos((prevTodos) => {
       const updatedTodos = prevTodos.filter((todo) => todo.id !== id);
-      updateStoredData({ todos: updatedTodos, entries: userData.entries }); // Update local storage immediately
+      updateStoredData({
+        todos: updatedTodos,
+        entries: userData.entries,
+        clearedItems: updateClearedItems(updatedTodos, clearedItems),
+      }); // Update local storage immediately
       return updatedTodos;
     });
 
@@ -66,15 +80,36 @@ export const TodoWrapper = ({ searchQuery }) => {
       )
     );
   };
+
   const editTask = (task, id) => {
     setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, task, isEditing: !todo.isEditing } : todo
+      todos.map(
+        (todo) => (todo.id === id ? { ...todo, task, isEditing: false } : todo) // Set isEditing to false when updating the task
       )
     );
-    console.log(todos);
-    updateLocalStorageData({ todos, entries: userData.entries });
   };
+
+  const clearCompleted = () => {
+    setTodos((prevTodos) => {
+      // Extracting the cleared items logic
+      const updatedClearedItems = updateClearedItems(prevTodos, clearedItems); // Call the locally defined updateClearedItems function
+
+      // Update the state with the new cleared items
+      setClearedItems(updatedClearedItems);
+      console.log("Cleared Items:", updatedClearedItems);
+
+      // Update local storage data
+      updateStoredData({
+        todos: prevTodos.filter((todo) => !todo.completed),
+        entries: userData.entries,
+        clearedItems: updatedClearedItems,
+      });
+
+      // Return the filtered todos
+      return prevTodos.filter((todo) => !todo.completed);
+    });
+  };
+
   const updateClearedItems = (prevTodos = [], clearedItems = {}) => {
     // Check if prevTodos or clearedItems are undefined and assign default values if necessary
     if (!prevTodos || !clearedItems) {
@@ -104,26 +139,7 @@ export const TodoWrapper = ({ searchQuery }) => {
 
     return updatedClearedItems;
   };
-  const clearCompleted = () => {
-    setTodos((prevTodos) => {
-      // Extracting the cleared items logic
-      const updatedClearedItems = updateClearedItems(prevTodos, clearedItems); // Call the locally defined updateClearedItems function
 
-      // Update the state with the new cleared items
-      setClearedItems(updatedClearedItems);
-      console.log("Cleared Items:", updatedClearedItems);
-
-      // Update local storage data
-      updateStoredData({
-        todos: prevTodos.filter((todo) => !todo.completed),
-        entries: userData.entries,
-        clearedItems: updatedClearedItems,
-      });
-
-      // Return the filtered todos
-      return prevTodos.filter((todo) => !todo.completed);
-    });
-  };
   const saveUserData = (updatedTodos) => {
     console.log("Saving user data...");
     const currentDate = new Date().toLocaleDateString();
@@ -155,7 +171,7 @@ export const TodoWrapper = ({ searchQuery }) => {
       }
     }
 
-    updateLocalStorageData({ todos, entries: userData.entries });
+    updateLocalStorageData({ todos, entries: userData.entries, clearedItems });
   };
 
   const anyCompletedTodos = todos && todos.some((todo) => todo.completed);
@@ -174,7 +190,12 @@ export const TodoWrapper = ({ searchQuery }) => {
 
       {filteredTodos.map((todo, index) =>
         todo.isEditing ? (
-          <EditTodoForm editTodo={editTask} task={todo} key={index} />
+          <EditTodoForm
+            editTodo={editTask}
+            task={todo}
+            key={index}
+            saveUserData={saveUserData} // Pass saveUserData as a prop
+          />
         ) : (
           <Todo
             task={todo}
