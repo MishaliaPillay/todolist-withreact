@@ -4,6 +4,9 @@ import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import EditTodoForm from "./EditTodoForm";
 const Todo = ({ task, toggleComplete, deleteTodo, editTodo }) => {
+
+
+
   return (
     <div className="Todo">
       <p

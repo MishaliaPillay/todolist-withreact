@@ -1,0 +1,20 @@
+.header {
+  background-color: #002324;
+  color: #ffffff;
+  padding: 20px;
+
+  margin-bottom: 10%;
+}
+
+
+
+.logo h1 {
+  margin: 0;
+  font-size: 24px;
+  margin-left: 10px; /* Adjust as needed */
+}
+
+.logo-image {
+  border-radius: 50%; /* Create circular shape */
+  margin-right: 10px; /* Adjust as needed */
+}

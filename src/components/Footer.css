@@ -1,0 +1,28 @@
+.footer {
+  width: 100%;
+  background-color: aliceblue;
+  height: 50px; /* Set the height of the footer */
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+.footer-content {
+  margin-left: 45%;
+  color: #000; /* Optionally change text color */
+}
+
+.social-icons img {
+  width: 30px; /* Adjust icon size as needed */
+  margin: 0 5px; /* Add margin between icons */
+}
+.iconlink {
+  font-size: 20px;
+  margin-right: 10%;
+  color: black; /* Set the color of the icons */
+}

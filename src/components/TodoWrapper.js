@@ -7,6 +7,30 @@ import EditTodoForm from "./EditTodoForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { getLocalStorageData, updateLocalStorageData } from "./LocalStorage";
+const SaveButton = ({ saveUserData }) => {
+  const [isShrinking, setIsShrinking] = useState(false);
+  const [isGrowing, setIsGrowing] = useState(false);
+
+  const handleClick = () => {
+    setIsShrinking(true);
+    setTimeout(() => {
+      setIsShrinking(false);
+      setIsGrowing(true);
+      setTimeout(() => setIsGrowing(false), 500);
+    }, 500);
+    saveUserData(); // Call saveUserData after animation
+  };
+
+  return (
+    <FontAwesomeIcon
+      icon={faSave}
+      className={`faSave ${isShrinking ? "shrink-animation" : ""} ${
+        isGrowing ? "grow-animation" : ""
+      }`}
+      onClick={handleClick}
+    />
+  );
+};
 
 export const TodoWrapper = ({ searchQuery }) => {
   const [todos, setTodos] = useState([]);
@@ -80,13 +104,18 @@ export const TodoWrapper = ({ searchQuery }) => {
       )
     );
   };
+  // TodoWrapper (editTask function)
 
   const editTask = (task, id) => {
-    setTodos(
-      todos.map(
-        (todo) => (todo.id === id ? { ...todo, task, isEditing: false } : todo) // Set isEditing to false when updating the task
-      )
-    );
+    return new Promise((resolve) => {
+      setTodos(
+        todos.map((todo) =>
+          todo.id === id ? { ...todo, task, isEditing: false } : todo
+        )
+      );
+      saveUserData(todos); // Pass the updated todos
+      resolve(); // Resolve the promise after state update
+    });
   };
 
   const clearCompleted = () => {
@@ -209,20 +238,20 @@ export const TodoWrapper = ({ searchQuery }) => {
 
       <div className="taskCount">
         <p>
-          Tasks: {todoCount}{" "}
-          <FontAwesomeIcon
-            onClick={saveUserData}
-            className="faSave"
-            icon={faSave}
-          />
+          Tasks: {todoCount} <SaveButton saveUserData={saveUserData} />
+        </p>
+        <p>
+          {anyCompletedTodos && (
+            <button
+              type="submit"
+              className="clear-btn"
+              onClick={clearCompleted}
+            >
+              Clear completed
+            </button>
+          )}
         </p>
       </div>
-
-      {anyCompletedTodos && (
-        <button type="submit" className="clear-btn" onClick={clearCompleted}>
-          Clear completed
-        </button>
-      )}
     </div>
   );
 };

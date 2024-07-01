@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+.map {
+  font-family: "Poppins", sans-serif;
+  font-weight: lighter;
+  margin-top: 40px;
+  overflow: visible;
+}
+.mapyear {
+  margin-top: 500px;
+  font-family: "Poppins", sans-serif;
+  font-weight: lighter;
+  margin-top: 40px;
+  overflow: visible;
+  align-content: center;
+  justify-content: center;
+}

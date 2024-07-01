@@ -3,14 +3,17 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Calendar from "./components/Calendar";
 import SidePanel from "./components/SidePanel";
+import YearlyHeatmap from "./components/YearlyHeatmap";
 import TodoWrapper from "./components/TodoWrapper";
 import { ClearedItemsProvider } from "./components/ClearedItemsContext";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
 
 function App() {
-  // Define state variables separately
   const [searchQuery, setSearchQuery] = useState("");
   const [todoList, setTodoList] = useState([]);
   const [clearedItems, setClearedItems] = useState({});
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   // Define addTodo function to update todoList state
   const addTodo = (newTodo) => {
@@ -24,34 +27,44 @@ function App() {
     setClearedItems(updatedClearedItems);
   };
 
+  const togglePanel = () => {
+    setIsPanelOpen(!isPanelOpen);
+  };
+
   return (
-    <Router>
+    <Router className="App">
+      <Header />
       <ClearedItemsProvider value={{ clearedItems, updateClearedItems }}>
-        <div>
-          <aside className="aside">
+        <div className="content">
+          <button className="burger-btn" onClick={togglePanel}>
+            ☰
+          </button>
+          <aside className={`aside ${isPanelOpen ? "open" : ""}`}>
             <SidePanel
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
-              addTodo={addTodo} // Pass addTodo function to SidePanel
+              addTodo={addTodo}
             />
           </aside>
-
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <TodoWrapper
-                  searchQuery={searchQuery}
-                  todoList={todoList}
-                  setTodoList={setTodoList} // Pass todoList and setTodoList to TodoWrapper
-                />
-              } // Pass todoList to TodoWrapper
-            />
-            <Route
-              path="/calendar"
-              element={<Calendar todoList={todoList} />} // Pass todoList to Calendar
-            />
-          </Routes>
+          <div className="main-content">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <div className="content">
+                    <TodoWrapper
+                      searchQuery={searchQuery}
+                      todoList={todoList}
+                      setTodoList={setTodoList}
+                    />
+                  </div>
+                }
+              />
+              <Route path="/calendar" element={<Calendar todoList={todoList} />} />
+              <Route path="/YearlyHeatmap" element={<YearlyHeatmap todoList={todoList} />} />
+            </Routes>
+            <Footer />
+          </div>
         </div>
       </ClearedItemsProvider>
     </Router>

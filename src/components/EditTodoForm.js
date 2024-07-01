@@ -9,11 +9,14 @@ const EditTodoForm = ({ editTodo, task, saveUserData }) => {
     e.preventDefault();
 
     if (value.trim() !== "") {
-      editTodo(value, task.id);
-      saveUserData(); // Call saveUserData after updating the task
+      editTodo(value, task.id)
+        .then(() => {
+          setValue(""); // Reset value after successful state update
+        })
+        .catch((error) => {
+          console.error("Error updating task:", error); // Handle potential errors
+        });
     }
-    saveUserData();
-    setValue("");
   };
 
   return (
@@ -25,7 +28,16 @@ const EditTodoForm = ({ editTodo, task, saveUserData }) => {
         placeholder="Task Is Required"
         onChange={(e) => setValue(e.target.value)}
       />
-      <button type="submit" className="todo-btn" onClick={saveUserData}>
+      <button
+        type="submit"
+        className="todo-btn"
+        onClick={() => {
+          editTodo(value, task.id, () => {
+            // Hide the edit form or perform other actions after state update
+            setValue("");
+          });
+        }}
+      >
         Done
       </button>
     </form>
