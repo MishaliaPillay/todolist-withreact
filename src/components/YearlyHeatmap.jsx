@@ -33,19 +33,15 @@ const Heatmap = () => {
 
     const margin = { top: 20, right: 10, bottom: 40, left: 40 };
     const cellSize = 10; // Adjust cell size for all days of the year
-    const calendarWidth = 400; // Set a fixed width for simplicity
     const calendarHeight = Math.ceil(daysInYear / 7) * cellSize; // Calculate height based on number of weeks
 
     const svg = d3
       .select(svgRef.current)
       .attr("class", "mapyear")
-      .attr("width", "700px")
-      .attr("height", "150px")
-      .style("background-color", "#2bbccc")
-      .style("border", "2px solid #2bbccc")
-      .style("border-radius", "5px")
+      .attr("viewBox", `0 0 ${calendarHeight + margin.left + margin.right} ${150 + margin.top + margin.bottom}`) // Use viewBox for responsive SVG
+      .attr("preserveAspectRatio", "xMinYMin meet") // Preserve aspect ratio
       .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top}) `);
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
     const colorScale = d3
       .scaleSequential(d3.interpolateReds)
@@ -93,7 +89,11 @@ const Heatmap = () => {
       .text((d) => d3.timeFormat("%b")(d)); // Format the month label as abbreviated month name
   }, []);
 
-  return <svg ref={svgRef}></svg>;
+  return ( 
+    <div className="reportContainer">
+      <svg ref={svgRef}></svg>
+    </div>
+  );
 };
 
 export default Heatmap;

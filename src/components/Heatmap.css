@@ -19,3 +19,36 @@ body {
   align-content: center;
   justify-content: center;
 }
+.reportContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 180%;
+  height: auto;
+  padding: 20px; /* Optional padding */
+  box-sizing: border-box;margin-right: 20%;
+}
+
+.mapyear {
+  width: 100%;
+  height: auto;
+  background-color: #2bbccc;
+  border: 2px solid #2bbccc;
+  border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .reportContainer { width: 150%;
+    padding: 10px; /* Reduce padding for smaller screens */
+  }
+}
+@media (max-width: 768px) {
+  .reportContainer { width: 150%;
+    padding: 10px; /* Reduce padding for smaller screens */
+  }
+}
+@media (max-width: 480px) {
+  .reportContainer {width: 100%;
+    padding: 15px; /* Further reduce padding for very small screens */
+  }
+}

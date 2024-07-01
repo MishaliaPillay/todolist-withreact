@@ -1,9 +1,9 @@
 .header {
-  background-color: #002324;
-  color: #ffffff;
+  
   padding: 20px;
 
-  margin-bottom: 10%;
+  margin-bottom: 70%;
+  margin-left: 20%;
 }
 
 
@@ -17,4 +17,37 @@
 .logo-image {
   border-radius: 50%; /* Create circular shape */
   margin-right: 10px; /* Adjust as needed */
+}
+.header {
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  padding: 10px;
+  width: 100%;
+  max-width: 1200px; /* Set a max width for larger screens */
+  box-sizing: border-box;
+  margin-left: auto; /* Adjust for screens narrower than 1200px */
+    margin-right: auto;
+}
+
+@media (max-width: 1500px) {
+  .header {
+    margin-left: 50%; /* Adjust for screens narrower than 1200px */
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .header { margin-left: auto;
+    justify-content: center; /* Center the header content on smaller screens */
+    padding: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {margin-left: auto;
+    flex-direction: column; /* Stack header content vertically on very small screens */
+    align-items: flex-start;
+    padding: 5px;
+  }
 }

@@ -46,7 +46,7 @@ function App() {
               addTodo={addTodo}
             />
           </aside>
-          <div className="main-content">
+          <div className="">
             <Routes>
               <Route
                 path="/"

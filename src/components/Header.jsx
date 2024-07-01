@@ -4,7 +4,7 @@ import "./Header.css";
 const Header = () => {
   return (
     <header
-      style={{ display: "flex", alignItems: "center", marginRight: "50px" }}
+     className="header"
     >
       <img
         src={cheeseImage}
